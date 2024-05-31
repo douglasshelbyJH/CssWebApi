@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{21CADE38-3E3E-41F2-BE48-BB57EA42AD5E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC8263B2-1D0A-466D-9104-546E25D0B8DA}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		CodeCoverage.runsettings = CodeCoverage.runsettings
+		CssWebApi.code-workspace = CssWebApi.code-workspace
+		nuget.config = nuget.config
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{35EE488F-1478-429D-AD35-35322FD177E3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CssWebApi", "src\CssWebApi\CssWebApi.csproj", "{B83FD299-A5A1-4825-827F-F31E99B9A26C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CssWebApi.Tests", "tests\unit\CssWebApi.Tests\CssWebApi.Tests.csproj", "{D196CC02-B7F9-41D5-A23C-CBBF3DA6F0B6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B83FD299-A5A1-4825-827F-F31E99B9A26C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B83FD299-A5A1-4825-827F-F31E99B9A26C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B83FD299-A5A1-4825-827F-F31E99B9A26C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B83FD299-A5A1-4825-827F-F31E99B9A26C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D196CC02-B7F9-41D5-A23C-CBBF3DA6F0B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D196CC02-B7F9-41D5-A23C-CBBF3DA6F0B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D196CC02-B7F9-41D5-A23C-CBBF3DA6F0B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D196CC02-B7F9-41D5-A23C-CBBF3DA6F0B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B83FD299-A5A1-4825-827F-F31E99B9A26C} = {21CADE38-3E3E-41F2-BE48-BB57EA42AD5E}
+		{D196CC02-B7F9-41D5-A23C-CBBF3DA6F0B6} = {35EE488F-1478-429D-AD35-35322FD177E3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1B89F5CF-AC55-4555-A91C-3CEC051B4D71}
+	EndGlobalSection
+EndGlobal

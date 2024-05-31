@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JackHenry.CSS.Analyzers" Version="1.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="JackHenry.CSS.AspNetCore" Version="2.1.2" />
+    <PackageReference Include="JackHenry.CSS.Jxr" Version="2.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageReference Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
+    <PackageReference Include="SpecFlow.NUnit" Version="3.9.74" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="JackHenry.CSS.Authentication" Version="3.0.3" />
+    <PackageReference Include="SolidToken.SpecFlow.DependencyInjection" Version="3.9.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="RunSettings\" />
+  </ItemGroup>
+</Project>

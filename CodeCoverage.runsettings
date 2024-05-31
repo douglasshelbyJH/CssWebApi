@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+    <DataCollectionRunSettings>
+        <DataCollectors>
+            <DataCollector friendlyName="XPlat code coverage">
+                <Configuration>
+                    <!--https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings-->
+                    <ExcludeByFile>**/Program.cs</ExcludeByFile>
+                    <ExcludeByAttribute>GeneratedCodeAttribute</ExcludeByAttribute>
+                </Configuration>
+            </DataCollector>
+            <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Configuration>
+                    <CodeCoverage>
+                        <ModulePaths>
+                            <Exclude>
+                                <ModulePath>.*\\functional\\.*</ModulePath>
+                                <ModulePath>.*tests.dll</ModulePath>
+                                <ModulePath>.*Tests.dll</ModulePath>
+                            </Exclude>
+                        </ModulePaths>
+                        <Attributes>
+                            <Exclude>
+                                <Attribute>^System\.CodeDom\.Compiler\.GeneratedCodeAttribute$</Attribute>
+                                <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
+                            </Exclude>
+                        </Attributes>
+                        <Sources>
+                            <Exclude>
+                                <Source>.*\\Program.cs</Source>
+                            </Exclude>
+                        </Sources>
+                    </CodeCoverage>
+                </Configuration>
+            </DataCollector>
+        </DataCollectors>
+    </DataCollectionRunSettings>
+</RunSettings>

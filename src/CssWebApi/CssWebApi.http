@@ -1,0 +1,44 @@
+@CssWebApi_HostAddress = http://localhost:5229
+@InstitutionUniversalId = 4e3cde86-37ea-48bb-adef-4f820ba70b0f
+@Id = 32d785aa-78d3-4cf3-b94c-d02d3141bc99
+@XBannoEnterprise = token
+
+GET {{CssWebApi_HostAddress}}/v1/{{InstitutionUniversalId}}/samples/{{Id}}
+Accept: application/json
+X-BannoEnterprise0: {{XBannoEnterprise}}
+###
+
+DELETE {{CssWebApi_HostAddress}}/v1/{{InstitutionUniversalId}}/samples/{{Id}}
+Accept: application/json
+X-BannoEnterprise0: {{XBannoEnterprise}}
+###
+
+POST {{CssWebApi_HostAddress}}/v1/{{InstitutionUniversalId}}/samples
+Accept: application/json
+Content-Type: application/json
+X-BannoEnterprise0: {{XBannoEnterprise}}
+
+{
+    "name" : "test"
+}
+###
+
+PUT {{CssWebApi_HostAddress}}/v1/{{InstitutionUniversalId}}/samples/{{Id}}
+Accept: application/json
+Content-Type: application/json
+X-BannoEnterprise0: {{XBannoEnterprise}}
+
+{
+    "name" : "test"
+}
+###
+
+POST {{CssWebApi_HostAddress}}/v1/{{InstitutionUniversalId}}/samples/search?offset=0&count=10
+Accept: application/json
+Content-Type: application/json
+X-BannoEnterprise0: {{XBannoEnterprise}}
+
+{
+    "name" : "test"
+}
+###

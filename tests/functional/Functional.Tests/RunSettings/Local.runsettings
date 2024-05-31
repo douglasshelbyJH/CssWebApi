@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <TestRunParameters>
+      <Parameter name ="ClientId" value=""/>
+      <Parameter name="OidcProvider" value="https://platform.banno-development.com/a/oidc-provider/api/v0"/>
+      <Parameter name="ProductGatewayBaseUrl" value="https://api.banno-development.com"/>
+      <Parameter name="PrivateKey" value=""/>
+      <Parameter name="BaseUrl" value="http://localhost:5229/v1/{0}/"/>
+      <Parameter name="InstitutionUniversalId" value=""/>
+  </TestRunParameters>
+</RunSettings>
