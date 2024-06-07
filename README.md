@@ -33,7 +33,7 @@ Use [Application Default Credentials](https://cloud.google.com/docs/authenticati
     - [CSS Analyzers](https://github.com/JHAECP/analyzers#readme)
         - Stylecop Analyzers 
         - SonarQube Analyzers
-- [JH-Api Patterns]()
+- [JH-Api Patterns](https://github.com/JHAECP/asp-net-core#readme)
     - Headers
     - Route parameters
     - Standard Errors for response
@@ -77,3 +77,19 @@ Use [Application Default Credentials](https://cloud.google.com/docs/authenticati
 - Functional Tests
     - Run via Test Explorer. Service must be running and connected to data store for tests to succeed. 
     - Functional tests require Local.runsettings file to be configured, and set as your Solution Wide runsettings file
+
+## Entity Framework Core
+
+Dependencies
+- [EF Core CLI](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
+  - dotnet-tools.json manifest should perform a local install on restore</br>
+  local install: ```dotnet tool install dotnet-ef```</br>
+  global install: ```dotnet tool install --global dotnet-ef```
+  - Run ```dotnet ef``` to confirm installation
+- Google Cloud CLI
+    - Download and install the latest GCloud SDK</br>
+    ```winget install Google.CloudSDK```
+    - Create local credentials</br>
+    ```gcloud auth login```
+    - Set the default gcloud project to the sandbox
+    ```gcloud config set project sdb-dig-core-jheisessb977```
