@@ -6,20 +6,20 @@
 // -----------------------------------------------------------------------
 
 using CssWebApi.CssWebApi.Features.EfSample.EfCore.Configuration;
-using CssWebApi.CssWebApi.Features.Sample.Models;
+using CssWebApi.CssWebApi.Features.EfSample.EfCore.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace CssWebApi.CssWebApi.Features.EfSample.EfCore
 {
-    public class SampleDbContext : DbContext
+    public class SampleDbContext(DbContextOptions<SampleDbContext> options) : DbContext(options)
     {
-        public DbSet<SampleEntity> SampleEntities { get; set; }
+        public DbSet<SampleEfEntity> SampleEntities { get; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfiguration(new SampleEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SampleEfCoreEntityConfiguration());
         }
     }
 }

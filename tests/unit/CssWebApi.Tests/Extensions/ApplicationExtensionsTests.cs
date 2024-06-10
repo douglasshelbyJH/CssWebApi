@@ -47,9 +47,9 @@ namespace CssWebApi.Tests.Extensions
             // Assert
             // Verify that services are added
             Assert.Contains(services, s => s.ServiceType == typeof(SampleServices) && s.Lifetime == ServiceLifetime.Scoped);
-            Assert.Contains(services, s => s.ServiceType == typeof(ISampleRepository) && s.Lifetime == ServiceLifetime.Scoped);
+            Assert.Contains(services, s => s.ServiceType == typeof(ISampleEfRepository) && s.Lifetime == ServiceLifetime.Scoped);
 
-            var repository = servicesProvider.GetRequiredService<ISampleRepository>();
+            var repository = servicesProvider.GetRequiredService<ISampleEfRepository>();
 
             Assert.IsAssignableFrom<SampleSpannerRepository>(repository);
             Assert.Contains(services, s => s.ServiceType == typeof(SpannerConnection) && s.Lifetime == ServiceLifetime.Transient);

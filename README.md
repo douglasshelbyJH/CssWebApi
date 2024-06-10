@@ -80,16 +80,35 @@ Use [Application Default Credentials](https://cloud.google.com/docs/authenticati
 
 ## Entity Framework Core
 
-Dependencies
+### Dependencies
+#### Note: As of 2024-05-28 Google.Cloud.EntityFrameworkCore.Spanner v2.1.3 supports EF Core 6 only
 - [EF Core CLI](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
   - dotnet-tools.json manifest should perform a local install on restore</br>
   local install: ```dotnet tool install dotnet-ef```</br>
   global install: ```dotnet tool install --global dotnet-ef```
   - Run ```dotnet ef``` to confirm installation
-- Google Cloud CLI
+- [EF Core Tools for Powershell](https://learn.microsoft.com/en-us/ef/core/cli/powershell)
+    - Install from Package Manager Console</br>
+    ```Install-Package Microsoft.EntityFrameworkCore.Tools```
+- [Google Cloud CLI](https://cloud.google.com/sdk/gcloud)
     - Download and install the latest GCloud SDK</br>
     ```winget install Google.CloudSDK```
     - Create local credentials</br>
-    ```gcloud auth login```
+    ```gcloud auth application-default login```
     - Set the default gcloud project to the sandbox
     ```gcloud config set project sdb-dig-core-jheisessb977```
+
+### EF Core CLI Commands
+#### [Migrations Overview](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)
+#### *Common commands*
+#### Execute from the project directory where the DbContext exists
+#### Create a migration
+```dotnet ef migrations add InitialCreate --output-dir .\Features\EfSample\EfCore\Migrations```
+#### Remove changes for the latest migration
+```dotnet ef migrations remove```
+#### Update database with migrations
+```dotnet ef database update```
+#### Revert to a specific migraiton
+```dotnet ef database update InitialCreate```
+#### Revert all migrations
+```dotnet ef database update 0```

@@ -38,9 +38,12 @@ try
         .MapSamplesApi()
         .RequireAuthorization();
 
+    app.MapGroup("/v1/{InstitutionUniversalId}/samples-ef")
+        .MapSamplesEfApi();
+
     app.Run();
 }
-catch (Exception ex)
+catch (Exception ex) when (ex.GetType().FullName is not "Microsoft.Extensions.Hosting.HostFactoryResolver+HostingListener+StopTheHostException") // handle ef cli exceptions https://github.com/dotnet/efcore/issues/28478#issuecomment-1196245359
 {
     Serilog.Log.Fatal(ex, "Application terminated unexpectedly");
 }

@@ -21,7 +21,7 @@ namespace CssWebApi.Tests.Apis
     public class SamplesApiTests
     {
         private readonly MockRepository mockRepository;
-        private readonly Mock<ISampleRepository> mockSampleRepository;
+        private readonly Mock<ISampleEfRepository> mockSampleRepository;
         private readonly Mock<IJxrContext> mockJxrContext;
         private readonly Mock<ILogger<SampleServices>> mockLogger;
 
@@ -31,7 +31,7 @@ namespace CssWebApi.Tests.Apis
         public SamplesApiTests()
         {
             this.mockRepository = new MockRepository(MockBehavior.Strict);
-            this.mockSampleRepository = this.mockRepository.Create<ISampleRepository>();
+            this.mockSampleRepository = this.mockRepository.Create<ISampleEfRepository>();
             this.mockJxrContext = this.mockRepository.Create<IJxrContext>();
             this.mockLogger = this.mockRepository.Create<ILogger<SampleServices>>();
 

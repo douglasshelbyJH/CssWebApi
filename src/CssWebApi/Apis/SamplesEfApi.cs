@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="SamplesApi.cs" company="Jack Henry &amp; Associates, Inc.">
+// <copyright file="SamplesEfApi.cs" company="Jack Henry &amp; Associates, Inc.">
 // Copyright (c) Jack Henry &amp; Associates, Inc.
 // All rights reserved.
 // </copyright>
@@ -8,8 +8,9 @@
 using System.Diagnostics.CodeAnalysis;
 
 using CssWebApi.CssWebApi.Extensions;
-using CssWebApi.CssWebApi.Features.Sample;
-using CssWebApi.CssWebApi.Features.Sample.Models;
+using CssWebApi.CssWebApi.Features.EfSample;
+using CssWebApi.CssWebApi.Features.EfSample.EfCore.Entities;
+using CssWebApi.CssWebApi.Features.EfSample.Models;
 
 using JackHenry.CSS.AspNetCore;
 
@@ -17,10 +18,10 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CssWebApi.CssWebApi.Apis
 {
-    public static class SamplesApi
+    public static class SamplesEfApi
     {
         [ExcludeFromCodeCoverage]
-        public static RouteGroupBuilder MapSamplesApi(this RouteGroupBuilder app)
+        public static RouteGroupBuilder MapSamplesEfApi(this RouteGroupBuilder app)
         {
             app.MapGet("/{sampleId}", GetSampleAsync);
             app.MapPost("/search", SearchSamplesAsync);
@@ -30,9 +31,9 @@ namespace CssWebApi.CssWebApi.Apis
             return app;
         }
 
-        public static async Task<Results<Ok<SampleModel>, NotFound>> GetSampleAsync(
+        public static async Task<Results<Ok<SampleEfModel>, NotFound>> GetSampleAsync(
             string sampleId,
-            SampleServices services,
+            SampleEfServices services,
             CancellationToken cancellationToken)
         {
             if (!Guid.TryParse(sampleId, out Guid id))
@@ -40,19 +41,19 @@ namespace CssWebApi.CssWebApi.Apis
                 return TypedResults.NotFound();
             }
 
-            SampleEntity? entity = await services.Repository.FindAsync(id, cancellationToken);
+            SampleEfEntity? entity = await services.Repository.FindAsync(id, cancellationToken);
 
             if (entity == null)
             {
                 return TypedResults.NotFound();
             }
 
-            return TypedResults.Ok(new SampleModel { Id = entity.Id, Name = entity.Name });
+            return TypedResults.Ok(new SampleEfModel { Id = entity.Id, Name = entity.Name });
         }
 
         public static async Task<Results<NoContent, NotFound>> DeleteSampleAsync(
             string sampleId,
-            SampleServices services,
+            SampleEfServices services,
             CancellationToken cancellationToken)
         {
             if (!Guid.TryParse(sampleId, out Guid id))
@@ -68,7 +69,7 @@ namespace CssWebApi.CssWebApi.Apis
         public static async Task<Results<NoContent, NotFound, StandardErrorHttpResult>> UpdateSampleAsync(
             string sampleId,
             HttpContext httpContext,
-            SampleServices services,
+            SampleEfServices services,
             CancellationToken cancellationToken)
         {
             if (!Guid.TryParse(sampleId, out Guid id))
@@ -76,8 +77,8 @@ namespace CssWebApi.CssWebApi.Apis
                 return TypedResults.NotFound();
             }
 
-            (var isValid, UpdateRequestModel? request, StandardErrorHttpResult? error) =
-                await httpContext.Request.GetValidatedRequestAsync<UpdateRequestModel>(cancellationToken);
+            (var isValid, UpdateRequestEfModel? request, StandardErrorHttpResult? error) =
+                await httpContext.Request.GetValidatedRequestAsync<UpdateRequestEfModel>(cancellationToken);
 
             if (!isValid || request == null)
             {
@@ -92,13 +93,13 @@ namespace CssWebApi.CssWebApi.Apis
                 TypedResults.NotFound();
         }
 
-        public static async Task<Results<Created<CreateResponseModel>, StandardErrorHttpResult>> CreateSampleAsync(
+        public static async Task<Results<Created<CreateResponseEfModel>, StandardErrorHttpResult>> CreateSampleAsync(
             HttpContext httpContext,
-            SampleServices services,
+            SampleEfServices services,
             CancellationToken cancellationToken)
         {
-            (var isValid, CreateRequestModel? request, StandardErrorHttpResult? error) =
-                await httpContext.Request.GetValidatedRequestAsync<CreateRequestModel>(cancellationToken);
+            (var isValid, CreateRequestEfModel? request, StandardErrorHttpResult? error) =
+                await httpContext.Request.GetValidatedRequestAsync<CreateRequestEfModel>(cancellationToken);
 
             if (!isValid || request == null)
             {
@@ -107,18 +108,18 @@ namespace CssWebApi.CssWebApi.Apis
 
             request.InstitutionUniversalId = services.JxrContext.InstitutionUniversalId;
 
-            SampleEntity entity = await services.Repository.AddAsync(request.ToEntity(), cancellationToken);
+            SampleEfEntity entity = await services.Repository.AddAsync(request.ToEntity(), cancellationToken);
 
-            return TypedResults.Created(string.Empty, new CreateResponseModel(entity.Id));
+            return TypedResults.Created(string.Empty, new CreateResponseEfModel(entity.Id));
         }
 
-        public static async Task<Results<Ok<SearchResponseModel>, NotFound, StandardErrorHttpResult>> SearchSamplesAsync(
+        public static async Task<Results<Ok<SearchResponseEfModel>, NotFound, StandardErrorHttpResult>> SearchSamplesAsync(
             HttpContext httpContext,
-            SampleServices services,
+            SampleEfServices services,
             CancellationToken cancellationToken)
         {
-            (var isValid, SearchRequestModel? request, StandardErrorHttpResult? error) =
-                await httpContext.Request.GetValidatedRequestAsync<SearchRequestModel>(cancellationToken);
+            (var isValid, SearchRequestEfModel? request, StandardErrorHttpResult? error) =
+                await httpContext.Request.GetValidatedRequestAsync<SearchRequestEfModel>(cancellationToken);
 
             if (!isValid || request == null)
             {
@@ -144,8 +145,8 @@ namespace CssWebApi.CssWebApi.Apis
                 return StandardErrorResults.BadRequest(errors);
             }
 
-            SearchResponseEntity searchResults = await services.Repository.SearchSampleAsync(
-                new SearchRequestEntity(request.Name, services.JxrContext.InstitutionUniversalId),
+            SearchResponseEfEntity searchResults = await services.Repository.SearchSampleAsync(
+                new SearchRequestEfEntity(request.Name, services.JxrContext.InstitutionUniversalId),
                 offset,
                 count,
                 cancellationToken);

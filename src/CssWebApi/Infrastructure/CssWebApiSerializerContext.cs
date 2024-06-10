@@ -8,6 +8,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
+using CssWebApi.CssWebApi.Features.EfSample.Models;
 using CssWebApi.CssWebApi.Features.Sample.Models;
 
 using JackHenry.CSS.Jxr.Models;
@@ -22,6 +23,7 @@ namespace CssWebApi.CssWebApi.Infrastructure
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(StandardErrorModel))]
     [JsonSerializable(typeof(SampleModel))]
+    [JsonSerializable(typeof(SampleEfModel))]
     [JsonSerializable(typeof(CreateRequestModel))]
     [JsonSerializable(typeof(CreateResponseModel))]
     [JsonSerializable(typeof(SearchRequestModel))]
