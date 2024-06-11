@@ -78,7 +78,9 @@ Use [Application Default Credentials](https://cloud.google.com/docs/authenticati
     - Run via Test Explorer. Service must be running and connected to data store for tests to succeed. 
     - Functional tests require Local.runsettings file to be configured, and set as your Solution Wide runsettings file
 
-## Entity Framework Core
+## [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/)
+
+Additional classes have been added using EF Core which correspond to the existing feature set.  ```.\Features\EfSample```
 
 ### Dependencies
 #### Note: As of 2024-05-28 Google.Cloud.EntityFrameworkCore.Spanner v2.1.3 supports EF Core 6 only
@@ -98,17 +100,19 @@ Use [Application Default Credentials](https://cloud.google.com/docs/authenticati
     - Set the default gcloud project to the sandbox
     ```gcloud config set project sdb-dig-core-jheisessb977```
 
-### EF Core CLI Commands
+### EF Core CLI Commands for schema management
 #### [Migrations Overview](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)
 #### *Common commands*
-#### Execute from the project directory where the DbContext exists
+#### NOTE: Execute from the project directory
+#### List DbContexts in the project
+```dotnet ef dbcontext list```
 #### Create a migration
 ```dotnet ef migrations add InitialCreate --output-dir .\Features\EfSample\EfCore\Migrations```
 #### Remove changes for the latest migration
 ```dotnet ef migrations remove```
 #### Update database with migrations
 ```dotnet ef database update```
-#### Revert to a specific migraiton
+#### Revert the database to a specific migration
 ```dotnet ef database update InitialCreate```
-#### Revert all migrations
+#### Revert all database migrations
 ```dotnet ef database update 0```
