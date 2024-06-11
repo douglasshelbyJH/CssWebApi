@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------
 
 using CssWebApi.CssWebApi.Extensions;
+using CssWebApi.CssWebApi.Features.EfSample;
 using CssWebApi.CssWebApi.Features.Sample;
 using Google.Cloud.Spanner.Data;
 using JackHenry.CSS.AspNetCore.Extensions;
@@ -47,11 +48,45 @@ namespace CssWebApi.Tests.Extensions
             // Assert
             // Verify that services are added
             Assert.Contains(services, s => s.ServiceType == typeof(SampleServices) && s.Lifetime == ServiceLifetime.Scoped);
+            Assert.Contains(services, s => s.ServiceType == typeof(ISampleRepository) && s.Lifetime == ServiceLifetime.Scoped);
+
+            var repository = servicesProvider.GetRequiredService<ISampleRepository>();
+
+            Assert.IsAssignableFrom<SampleSpannerRepository>(repository);
+            Assert.Contains(services, s => s.ServiceType == typeof(SpannerConnection) && s.Lifetime == ServiceLifetime.Transient);
+        }
+
+        [Fact]
+        public void AddApplicationServices_RegistersExpectedEfServices()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+
+            var config = new ConfigurationManager()
+                .AddInMemoryCollection(
+                    new List<KeyValuePair<string, string?>>
+                    {
+                        new KeyValuePair<string, string?>("ConnectionStrings:Spanner", string.Empty),
+                    }).Build();
+            services.AddLogging();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddJxrContext();
+
+            IHostEnvironment env = new HostingEnvironment { EnvironmentName = Environments.Development };
+
+            var builder = Mock.Of<IHostApplicationBuilder>(b => b.Services == services && b.Configuration == config && b.Environment == env);
+
+            builder.AddApplicationServices();
+            var servicesProvider = services.BuildServiceProvider();
+
+            // Assert
+            // Verify that services are added
+            Assert.Contains(services, s => s.ServiceType == typeof(SampleEfServices) && s.Lifetime == ServiceLifetime.Scoped);
             Assert.Contains(services, s => s.ServiceType == typeof(ISampleEfRepository) && s.Lifetime == ServiceLifetime.Scoped);
 
             var repository = servicesProvider.GetRequiredService<ISampleEfRepository>();
 
-            Assert.IsAssignableFrom<SampleSpannerRepository>(repository);
+            Assert.IsAssignableFrom<SampleSpannerEfRepository>(repository);
             Assert.Contains(services, s => s.ServiceType == typeof(SpannerConnection) && s.Lifetime == ServiceLifetime.Transient);
         }
     }

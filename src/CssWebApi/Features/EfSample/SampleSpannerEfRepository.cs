@@ -56,7 +56,13 @@ namespace CssWebApi.CssWebApi.Features.EfSample
 
             response.Samples = await query.Skip(offset).Take(count).AsNoTrackingWithIdentityResolution().ToListAsync();
             response.Paging.Total = await query.CountAsync(cancellationToken);
-            response.Paging.NextOffset = response.Paging.Total <= offset + count ? null : (offset + count).ToString();
+
+            if (response.Paging.Total > 0)
+            {
+                response.Paging.Results = response.Samples?.Count ?? 0;
+                response.Paging.NextOffset =
+                    response.Paging.Total <= offset + count ? null : (offset + count).ToString();
+            }
 
             return response;
         }

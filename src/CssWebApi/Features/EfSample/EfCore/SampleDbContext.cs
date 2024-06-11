@@ -14,7 +14,7 @@ namespace CssWebApi.CssWebApi.Features.EfSample.EfCore
 {
     public class SampleDbContext(DbContextOptions<SampleDbContext> options) : DbContext(options)
     {
-        public DbSet<SampleEfEntity> SampleEntities { get; } = null!;
+        public DbSet<SampleEfEntity> SampleEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

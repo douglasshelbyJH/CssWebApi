@@ -1,13 +1,15 @@
 // -----------------------------------------------------------------------
-// <copyright file="SamplesApiTests.cs" company="Jack Henry &amp; Associates, Inc.">
+// <copyright file="SamplesEfApiTests.cs" company="Jack Henry &amp; Associates, Inc.">
 // Copyright (c) Jack Henry &amp; Associates, Inc.
 // All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
 using CssWebApi.CssWebApi.Apis;
-using CssWebApi.CssWebApi.Features.Sample;
-using CssWebApi.CssWebApi.Features.Sample.Models;
+using CssWebApi.CssWebApi.Features.EfSample;
+using CssWebApi.CssWebApi.Features.EfSample.EfCore.Entities;
+using CssWebApi.CssWebApi.Features.EfSample.Models;
+
 using JackHenry.CSS.AspNetCore;
 using JackHenry.CSS.Jxr.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -18,24 +20,24 @@ using Moq;
 
 namespace CssWebApi.Tests.Apis
 {
-    public class SamplesApiTests
+    public class SamplesEfApiTests
     {
         private readonly MockRepository mockRepository;
-        private readonly Mock<ISampleRepository> mockSampleRepository;
+        private readonly Mock<ISampleEfRepository> mockSampleRepository;
         private readonly Mock<IJxrContext> mockJxrContext;
-        private readonly Mock<ILogger<SampleServices>> mockLogger;
+        private readonly Mock<ILogger<SampleEfServices>> mockLogger;
 
-        private readonly SampleServices sampleServices;
+        private readonly SampleEfServices sampleServices;
         private readonly System.Text.Json.JsonSerializerOptions serializerOptions = new(System.Text.Json.JsonSerializerDefaults.Web);
 
-        public SamplesApiTests()
+        public SamplesEfApiTests()
         {
             this.mockRepository = new MockRepository(MockBehavior.Strict);
-            this.mockSampleRepository = this.mockRepository.Create<ISampleRepository>();
+            this.mockSampleRepository = this.mockRepository.Create<ISampleEfRepository>();
             this.mockJxrContext = this.mockRepository.Create<IJxrContext>();
-            this.mockLogger = this.mockRepository.Create<ILogger<SampleServices>>();
+            this.mockLogger = this.mockRepository.Create<ILogger<SampleEfServices>>();
 
-            this.sampleServices = new SampleServices(this.mockSampleRepository.Object, this.mockJxrContext.Object, this.mockLogger.Object);
+            this.sampleServices = new SampleEfServices(this.mockSampleRepository.Object, this.mockJxrContext.Object, this.mockLogger.Object);
         }
 
         [Fact]
@@ -49,13 +51,13 @@ namespace CssWebApi.Tests.Apis
 
             this.mockSampleRepository.Setup(s => s.FindAsync(Guid.Parse(sampleId), cts.Token))
                 .ReturnsAsync(
-                    new SampleEntity { Id = Guid.Parse(sampleId), Name = "Test", InstitutionUniversalId = institutionUniversalId });
+                    new SampleEfEntity { Id = Guid.Parse(sampleId), Name = "Test", InstitutionUniversalId = institutionUniversalId });
 
             // Act
-            Results<Ok<SampleModel>, NotFound> result = await SamplesApi.GetSampleAsync(sampleId, this.sampleServices, cts.Token);
+            Results<Ok<SampleEfModel>, NotFound> result = await SamplesEfApi.GetSampleAsync(sampleId, this.sampleServices, cts.Token);
 
             // Assert
-            Ok<SampleModel> response = Assert.IsType<Ok<SampleModel>>(result.Result);
+            Ok<SampleEfModel> response = Assert.IsType<Ok<SampleEfModel>>(result.Result);
             Assert.NotNull(response.Value);
             Assert.Equal(Guid.Parse(sampleId), response.Value.Id);
             Assert.Equal("Test", response.Value.Name);
@@ -69,10 +71,10 @@ namespace CssWebApi.Tests.Apis
             using var cts = new CancellationTokenSource();
             var sampleId = Guid.NewGuid().ToString();
             this.mockSampleRepository.Setup(s => s.FindAsync(Guid.Parse(sampleId), cts.Token))
-                .ReturnsAsync((SampleEntity?)null);
+                .ReturnsAsync((SampleEfEntity?)null);
 
             // Act
-            Results<Ok<SampleModel>, NotFound> result = await SamplesApi.GetSampleAsync(sampleId, this.sampleServices, cts.Token);
+            Results<Ok<SampleEfModel>, NotFound> result = await SamplesEfApi.GetSampleAsync(sampleId, this.sampleServices, cts.Token);
 
             // Assert
             Assert.IsType<NotFound>(result.Result);
@@ -87,7 +89,7 @@ namespace CssWebApi.Tests.Apis
             var sampleId = "test";
 
             // Act
-            Results<Ok<SampleModel>, NotFound> result = await SamplesApi.GetSampleAsync(sampleId, this.sampleServices, cts.Token);
+            Results<Ok<SampleEfModel>, NotFound> result = await SamplesEfApi.GetSampleAsync(sampleId, this.sampleServices, cts.Token);
 
             // Assert
             Assert.IsType<NotFound>(result.Result);
@@ -100,11 +102,11 @@ namespace CssWebApi.Tests.Apis
             // Arrange
             var institutionUniversalId = Guid.NewGuid().ToString();
             var id = Guid.NewGuid();
-            var createRequestModel = new CreateRequestModel("Test") { InstitutionUniversalId = institutionUniversalId };
+            var createRequestEfModel = new CreateRequestEfModel("Test") { InstitutionUniversalId = institutionUniversalId };
 
             DefaultHttpContext httpContext = new();
             var stream = new MemoryStream();
-            await System.Text.Json.JsonSerializer.SerializeAsync(stream, createRequestModel, this.serializerOptions);
+            await System.Text.Json.JsonSerializer.SerializeAsync(stream, createRequestEfModel, this.serializerOptions);
             stream.Position = 0;
             httpContext.Request.ContentLength = stream.Length;
             httpContext.Request.ContentType = "application/json";
@@ -112,16 +114,16 @@ namespace CssWebApi.Tests.Apis
 
             using var cts = new CancellationTokenSource();
 
-            this.mockSampleRepository.Setup(r => r.AddAsync(It.Is<SampleEntity>(e => IsValidEntity(e, createRequestModel.Name, institutionUniversalId)), cts.Token))
-                .ReturnsAsync(new SampleEntity { Id = id, Name = createRequestModel.Name });
+            this.mockSampleRepository.Setup(r => r.AddAsync(It.Is<SampleEfEntity>(e => IsValidEntity(e, createRequestEfModel.Name, institutionUniversalId)), cts.Token))
+                .ReturnsAsync(new SampleEfEntity { Id = id, Name = createRequestEfModel.Name });
 
             this.mockJxrContext.Setup(j => j.InstitutionUniversalId).Returns(institutionUniversalId);
 
             // Act
-            Results<Created<CreateResponseModel>, StandardErrorHttpResult> result = await SamplesApi.CreateSampleAsync(httpContext, this.sampleServices, cts.Token);
+            Results<Created<CreateResponseEfModel>, StandardErrorHttpResult> result = await SamplesEfApi.CreateSampleAsync(httpContext, this.sampleServices, cts.Token);
 
             // Assert
-            Created<CreateResponseModel> response = Assert.IsType<Created<CreateResponseModel>>(result.Result);
+            Created<CreateResponseEfModel> response = Assert.IsType<Created<CreateResponseEfModel>>(result.Result);
             Assert.Equal(id, response.Value?.Id);
             this.mockRepository.VerifyAll();
         }
@@ -135,11 +137,11 @@ namespace CssWebApi.Tests.Apis
         {
             // Arrange
             var institutionUniversalId = Guid.NewGuid().ToString();
-            var createRequestModel = new CreateRequestModel(name) { InstitutionUniversalId = institutionUniversalId };
+            var createRequestEfModel = new CreateRequestEfModel(name) { InstitutionUniversalId = institutionUniversalId };
 
             DefaultHttpContext httpContext = new();
             var stream = new MemoryStream();
-            await System.Text.Json.JsonSerializer.SerializeAsync(stream, createRequestModel, this.serializerOptions);
+            await System.Text.Json.JsonSerializer.SerializeAsync(stream, createRequestEfModel, this.serializerOptions);
             stream.Position = 0;
             httpContext.Request.ContentLength = stream.Length;
             httpContext.Request.ContentType = "application/json";
@@ -148,7 +150,7 @@ namespace CssWebApi.Tests.Apis
             using var cts = new CancellationTokenSource();
 
             // Act
-            Results<Created<CreateResponseModel>, StandardErrorHttpResult> result = await SamplesApi.CreateSampleAsync(httpContext, this.sampleServices, cts.Token);
+            Results<Created<CreateResponseEfModel>, StandardErrorHttpResult> result = await SamplesEfApi.CreateSampleAsync(httpContext, this.sampleServices, cts.Token);
 
             // Assert
             StandardErrorHttpResult error = Assert.IsType<StandardErrorHttpResult>(result.Result);
@@ -164,10 +166,10 @@ namespace CssWebApi.Tests.Apis
             // Arrange
             var sampleId = Guid.NewGuid().ToString();
             var institutionUniversalId = Guid.NewGuid().ToString();
-            var updateRequestModel = new UpdateRequestModel("Test") { InstitutionUniversalId = institutionUniversalId };
+            var updateRequestEfModel = new UpdateRequestEfModel("Test") { InstitutionUniversalId = institutionUniversalId };
             DefaultHttpContext httpContext = new();
             var stream = new MemoryStream();
-            await System.Text.Json.JsonSerializer.SerializeAsync(stream, updateRequestModel, this.serializerOptions);
+            await System.Text.Json.JsonSerializer.SerializeAsync(stream, updateRequestEfModel, this.serializerOptions);
             stream.Position = 0;
             httpContext.Request.ContentLength = stream.Length;
             httpContext.Request.ContentType = "application/json";
@@ -175,13 +177,13 @@ namespace CssWebApi.Tests.Apis
 
             using var cts = new CancellationTokenSource();
 
-            this.mockSampleRepository.Setup(s => s.UpdateAsync(It.Is<SampleEntity>(e => IsValidEntity(e, updateRequestModel.Name, institutionUniversalId)), cts.Token))
+            this.mockSampleRepository.Setup(s => s.UpdateAsync(It.Is<SampleEfEntity>(e => IsValidEntity(e, updateRequestEfModel.Name, institutionUniversalId)), cts.Token))
                 .ReturnsAsync(true);
 
             this.mockJxrContext.Setup(j => j.InstitutionUniversalId).Returns(institutionUniversalId);
 
             // Act
-            Results<NoContent, NotFound, StandardErrorHttpResult> result = await SamplesApi.UpdateSampleAsync(sampleId, httpContext, this.sampleServices, cts.Token);
+            Results<NoContent, NotFound, StandardErrorHttpResult> result = await SamplesEfApi.UpdateSampleAsync(sampleId, httpContext, this.sampleServices, cts.Token);
 
             // Assert
             Assert.IsType<NoContent>(result.Result);
@@ -198,7 +200,7 @@ namespace CssWebApi.Tests.Apis
             DefaultHttpContext httpContext = new();
 
             // Act
-            Results<NoContent, NotFound, StandardErrorHttpResult> result = await SamplesApi.UpdateSampleAsync(sampleId, httpContext, this.sampleServices, cts.Token);
+            Results<NoContent, NotFound, StandardErrorHttpResult> result = await SamplesEfApi.UpdateSampleAsync(sampleId, httpContext, this.sampleServices, cts.Token);
 
             // Assert
             Assert.IsType<NotFound>(result.Result);
@@ -215,10 +217,10 @@ namespace CssWebApi.Tests.Apis
             // Arrange
             var sampleId = Guid.NewGuid().ToString();
             var institutionUniversalId = Guid.NewGuid().ToString();
-            var updateRequestModel = new UpdateRequestModel(name) { InstitutionUniversalId = institutionUniversalId };
+            var updateRequestEfModel = new UpdateRequestEfModel(name) { InstitutionUniversalId = institutionUniversalId };
             DefaultHttpContext httpContext = new();
             var stream = new MemoryStream();
-            await System.Text.Json.JsonSerializer.SerializeAsync(stream, updateRequestModel, this.serializerOptions);
+            await System.Text.Json.JsonSerializer.SerializeAsync(stream, updateRequestEfModel, this.serializerOptions);
             stream.Position = 0;
             httpContext.Request.ContentLength = stream.Length;
             httpContext.Request.ContentType = "application/json";
@@ -227,7 +229,7 @@ namespace CssWebApi.Tests.Apis
             using var cts = new CancellationTokenSource();
 
             // Act
-            Results<NoContent, NotFound, StandardErrorHttpResult> result = await SamplesApi.UpdateSampleAsync(sampleId, httpContext, this.sampleServices, cts.Token);
+            Results<NoContent, NotFound, StandardErrorHttpResult> result = await SamplesEfApi.UpdateSampleAsync(sampleId, httpContext, this.sampleServices, cts.Token);
 
             // Assert
             StandardErrorHttpResult error = Assert.IsType<StandardErrorHttpResult>(result.Result);
@@ -247,7 +249,7 @@ namespace CssWebApi.Tests.Apis
                 .ReturnsAsync(true);
 
             // Act
-            Results<NoContent, NotFound> result = await SamplesApi.DeleteSampleAsync(sampleId, this.sampleServices, cts.Token);
+            Results<NoContent, NotFound> result = await SamplesEfApi.DeleteSampleAsync(sampleId, this.sampleServices, cts.Token);
 
             // Assert
             Assert.IsType<NoContent>(result.Result);
@@ -262,7 +264,7 @@ namespace CssWebApi.Tests.Apis
             var sampleId = "test";
 
             // Act
-            Results<NoContent, NotFound> result = await SamplesApi.DeleteSampleAsync(sampleId, this.sampleServices, cts.Token);
+            Results<NoContent, NotFound> result = await SamplesEfApi.DeleteSampleAsync(sampleId, this.sampleServices, cts.Token);
 
             // Assert
             Assert.IsType<NotFound>(result.Result);
@@ -276,7 +278,7 @@ namespace CssWebApi.Tests.Apis
             var sampleId = Guid.NewGuid().ToString();
             var institutionUniversalId = Guid.NewGuid().ToString();
 
-            var searchRequestModel = new SearchRequestModel("Test");
+            var searchRequestModel = new SearchRequestEfModel("Test");
             DefaultHttpContext httpContext = new();
             var stream = new MemoryStream();
             await System.Text.Json.JsonSerializer.SerializeAsync(stream, searchRequestModel, this.serializerOptions);
@@ -304,27 +306,27 @@ namespace CssWebApi.Tests.Apis
             };
 
             this.mockSampleRepository.Setup(s => s.SearchSampleAsync(
-                It.Is<SearchRequestEntity>(e => e.InstitutionUniversalId == institutionUniversalId && e.Name == "Test"),
+                It.Is<SearchRequestEfEntity>(e => e.InstitutionUniversalId == institutionUniversalId && e.Name == "Test"),
                 offset,
                 count,
                 cts.Token))
                 .ReturnsAsync(
-                    new SearchResponseEntity
+                    new SearchResponseEfEntity
                     {
                         Paging = paging,
                         Samples =
                         [
-                            new SampleEntity { Id = Guid.Parse(sampleId), Name = searchRequestModel.Name, InstitutionUniversalId = institutionUniversalId }
+                            new SampleEfEntity { Id = Guid.Parse(sampleId), Name = searchRequestModel.Name, InstitutionUniversalId = institutionUniversalId }
                         ]
                     });
 
             this.mockJxrContext.Setup(j => j.InstitutionUniversalId).Returns(institutionUniversalId);
 
             // Act
-            Results<Ok<SearchResponseModel>, NotFound, StandardErrorHttpResult> result = await SamplesApi.SearchSamplesAsync(httpContext, this.sampleServices, cts.Token);
+            Results<Ok<SearchResponseEfModel>, NotFound, StandardErrorHttpResult> result = await SamplesEfApi.SearchSamplesAsync(httpContext, this.sampleServices, cts.Token);
 
             // Assert
-            Ok<SearchResponseModel> response = Assert.IsType<Ok<SearchResponseModel>>(result.Result);
+            Ok<SearchResponseEfModel> response = Assert.IsType<Ok<SearchResponseEfModel>>(result.Result);
             Assert.NotNull(response.Value?.Samples);
             Assert.Single(response.Value.Samples);
             Assert.Equal(Guid.Parse(sampleId), response.Value.Samples[0].Id);
@@ -341,7 +343,7 @@ namespace CssWebApi.Tests.Apis
         public async Task SearchSamplesAsync_ReturnsBadRequest_WhenSearchIsInvalid(string? name)
         {
             // Arrange
-            var searchRequestModel = new SearchRequestModel(name);
+            var searchRequestModel = new SearchRequestEfModel(name);
             DefaultHttpContext httpContext = new();
             var stream = new MemoryStream();
             await System.Text.Json.JsonSerializer.SerializeAsync(stream, searchRequestModel, this.serializerOptions);
@@ -353,7 +355,7 @@ namespace CssWebApi.Tests.Apis
             using var cts = new CancellationTokenSource();
 
             // Act
-            Results<Ok<SearchResponseModel>, NotFound, StandardErrorHttpResult> result = await SamplesApi.SearchSamplesAsync(httpContext, this.sampleServices, cts.Token);
+            Results<Ok<SearchResponseEfModel>, NotFound, StandardErrorHttpResult> result = await SamplesEfApi.SearchSamplesAsync(httpContext, this.sampleServices, cts.Token);
 
             // Assert
             StandardErrorHttpResult error = Assert.IsType<StandardErrorHttpResult>(result.Result);
@@ -370,7 +372,7 @@ namespace CssWebApi.Tests.Apis
         public async Task SearchSamplesAsync_ReturnsOk_WhenPagingIsInvalid(int? offset, int? count)
         {
             // Arrange
-            var searchRequestModel = new SearchRequestModel("Test");
+            var searchRequestModel = new SearchRequestEfModel("Test");
             DefaultHttpContext httpContext = new();
             var stream = new MemoryStream();
             await System.Text.Json.JsonSerializer.SerializeAsync(stream, searchRequestModel, this.serializerOptions);
@@ -388,7 +390,7 @@ namespace CssWebApi.Tests.Apis
             using var cts = new CancellationTokenSource();
 
             // Act
-            Results<Ok<SearchResponseModel>, NotFound, StandardErrorHttpResult> result = await SamplesApi.SearchSamplesAsync(httpContext, this.sampleServices, cts.Token);
+            Results<Ok<SearchResponseEfModel>, NotFound, StandardErrorHttpResult> result = await SamplesEfApi.SearchSamplesAsync(httpContext, this.sampleServices, cts.Token);
 
             // Assert
             StandardErrorHttpResult error = Assert.IsType<StandardErrorHttpResult>(result.Result);
@@ -398,7 +400,7 @@ namespace CssWebApi.Tests.Apis
             this.mockRepository.VerifyAll();
         }
 
-        private static bool IsValidEntity(SampleEntity entity, string name, string institutionUniversalId)
+        private static bool IsValidEntity(SampleEfEntity entity, string name, string institutionUniversalId)
         {
             Assert.NotEqual(Guid.Empty, entity.Id);
             Assert.Equal(name, entity.Name);
