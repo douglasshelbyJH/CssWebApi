@@ -12,13 +12,17 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace CssWebApi.CssWebApi.Features.EfSample.EfCore
 {
+    /// <summary>
+    /// This factory is used when executing dotnet ef CLI commands.
+    /// </summary>
     public class SampleDbContextFactory : IDesignTimeDbContextFactory<SampleDbContext>
     {
         public SampleDbContext CreateDbContext(string[] args)
         {
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+
             var optionsBuilder = new DbContextOptionsBuilder<SampleDbContext>();
-            optionsBuilder.UseSpanner(
-                "Data Source=projects/sdb-dig-core-jheisessb977/instances/sdb-dig-core-jheisessb977-01/databases/dshelby-sampledb");
+            optionsBuilder.UseSpanner(configuration.GetConnectionString("Spanner"));
 
             return new SampleDbContext(optionsBuilder.Options);
         }
